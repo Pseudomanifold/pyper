@@ -61,7 +61,7 @@ def make_betti_curve(diagram):
 
     # TODO: this is ignored for now; need to check what the implications
     # of this are in practice.
-    if shared_times and False:
+    if shared_times:
         raise RuntimeError('Inconsistent creation/destruction time')
 
     # If the diagram is empty, skip everything. In the following, I will

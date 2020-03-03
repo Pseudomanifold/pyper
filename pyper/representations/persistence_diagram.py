@@ -4,10 +4,10 @@ Contains a class describing persistence diagrams, along with some basic
 summary statistics.
 """
 
-import collections
+import collections.abc
 
 
-class PersistenceDiagram(collections.Sequence):
+class PersistenceDiagram(collections.abc.Sequence):
     """Persistence diagram class.
 
     Represents a persistence diagram, i.e. a pairing of nodes in
