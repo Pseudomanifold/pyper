@@ -148,12 +148,14 @@ class BettiCurve:
 
             # It's brute force, but this ensures that the data frames
             # are compatible with each other.
-            assert self._data.index.name == 'x'
+            assert self._data.index.name == 'threshold'
 
         else:
             self._data = pd.DataFrame.from_records(
-                values, columns=['x', 'y'], index='x'
-            )['y']
+                values,
+                columns=['threshold', 'n_features'],
+                index='threshold'
+            )['n_features']
 
     def __repr__(self):
         """Return a string-based representation of the curve."""
