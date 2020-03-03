@@ -157,6 +157,46 @@ class BettiCurve:
                 index='threshold'
             )['n_features']
 
+    def __call__(self, threshold):
+        """Evaluate the Betti curve at a given threshold.
+
+        Parameters
+        ----------
+        threshold:
+            Threshold at which to evaluate the curve. All numbers are
+            valid here, but for some of them, the function may return
+            zero.
+
+        Returns
+        -------
+        Number of active features in the Betti curve under the given
+        threshold.
+        """
+        match = self._data[self._data.index == threshold]
+        if not match.empty:
+            return match.values[0]
+
+        # Interpolate between the nearest two indices. For most Betti
+        # curves, this should be the same value anyway, but if one is
+        # calculating averages, this might change.
+        else:
+            lower = self._data[self._data.index < threshold].index
+            upper = self._data[self._data.index > threshold].index
+
+            if not lower.empty and not upper.empty:
+                # Take the *last* index of the lower half of the data,
+                # and the *first* index of the upper half of the data,
+                # in order to find the proper neighbours.
+                lower = lower[-1]
+                upper = upper[0]
+
+                return 0.5 * (self._data[lower] + self._data[upper])
+            else:
+                # Either one of the indices is *outside* the halves of
+                # the data, so we return zero because the curve has to
+                # have compact support.
+                return 0.0
+
     def __repr__(self):
         """Return a string-based representation of the curve."""
         return self._data.__repr__()
