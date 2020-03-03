@@ -39,8 +39,9 @@ def make_betti_curve(diagram):
 
     # Create the 'raw' sequence of event points first. This blindly
     # assumes that all creation and destruction times are different
-    # from each other.
-
+    # from each other. If this is *not* the case, the same value is
+    # used with a different number of active intervals. This may be
+    # a problem for the consistency of indices later on.
     for p, is_generator in event_points:
         if is_generator:
             n_active += 1
@@ -49,29 +50,16 @@ def make_betti_curve(diagram):
 
         output.append((p, n_active))
 
-    # Check some edge cases first: if both a generator and a destroyer
-    # share the same time, the barcode representation will not exhibit
-    # any gaps. This creates undesirable situations when creating each
-    # of the curves.
-
-    creation_times = set([t for t, g in event_points if g])
-    destruction_times = set([t for t, g in event_points if not g])
-
-    shared_times = creation_times.intersection(destruction_times)
-
-    # TODO: this is ignored for now; need to check what the implications
-    # of this are in practice.
-    if shared_times:
-        raise RuntimeError('Inconsistent creation/destruction time')
-
     # If the diagram is empty, skip everything. In the following, I will
     # assume that at least a single point exists.
     if not event_points:
         return None
 
     prev_p = event_points[0][0]   # Previous time point
-    prev_v = event_points[0][1]   # Previous number of active intervals
+    prev_v = 0                    # Previous number of active intervals
 
+    # Will contain the tuples that give rise to the Betti curve in the
+    # end, i.e. the threshold and the number of active intervals.
     output_ = []
 
     # Functor that is called to simplify the loop processing, which
@@ -84,6 +72,8 @@ def make_betti_curve(diagram):
         nonlocal prev_v
         nonlocal output_
 
+        # Update the number of active intervals for as long as the
+        # current threshold does *not* change.
         if prev_p == p:
             prev_v = n_active
 
@@ -91,7 +81,8 @@ def make_betti_curve(diagram):
         # should now be stored.
         else:
 
-            # Create a transition point if this is not the first output
+            # Check whether this is *not* the first output and create
+            # a transition point in the data set.
             if output_:
 
                 # This makes the previous interval half-open by
