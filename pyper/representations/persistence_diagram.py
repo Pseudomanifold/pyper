@@ -15,9 +15,20 @@ class PersistenceDiagram(collections.Sequence):
     interface for storing and accessing this pairing.
     """
 
-    def __init__(self):
-        """Create new persistence diagram."""
-        self._pairs = []
+    def __init__(self, pairs=None):
+        """Create new persistence diagram.
+
+        Parameters
+        ----------
+        pairs:
+            Optional sequence of persistence pairs to add to this
+            diagram. If set, the diagram will be initialised with
+            said sequence. The sequence *must* consist of tuples.
+        """
+        if pairs is None:
+            self._pairs = []
+        else:
+            self._pairs = [(c, d) for c, d in pairs]
 
     def __len__(self):
         """Return the number of pairs in the persistence diagram."""
