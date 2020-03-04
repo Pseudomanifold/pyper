@@ -125,7 +125,8 @@ def calculate_height_filtration(
     attribute_out:
         Specifies the attribute name for storing the result of the
         calculation. This name will pertain to *both* vertices and
-        edges.
+        edges. If the attribute already exists, the function will
+        overwrite it.
 
     Returns
     -------
@@ -152,7 +153,6 @@ def calculate_height_filtration(
         x = vertex[attribute_in]
         r = np.dot(x, v)
 
-        # TODO: check whether attribute does not yet exist
         vertex[attribute_out] = r
 
     for edge in graph.es:
