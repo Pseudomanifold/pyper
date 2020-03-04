@@ -11,6 +11,18 @@ def _check_vertex_attribute_existence(graph, attribute_in):
     return attribute_in in graph.vs.attributes()
 
 
+def _check_dimensionality(graph, attribute_in, x):
+    attributes = graph.vs[attribute_in]
+
+    # Ensure that both the attribute and the coordinate vectors have the
+    # same dimensionality.
+    a_lengths = set([len(attrib) for attrib in attributes])
+    x_length = len(x)
+
+    assert len(a_lengths) == 1    # only a single value
+    assert x_length in a_lengths  # length/dimensionality coincide
+
+
 def calculate_distance_filtration(
     graph,
     order=2,
@@ -87,6 +99,10 @@ def calculate_height_filtration(
 ):
     """Calculate height filtration of a graph in some direction.
 
+    *Note*: This function works for *all* vector-valued attributes of
+    a graph, but in the following, it will be assumed that those
+    attributes are 3D.
+
     Given a 3D direction vector, this function calculates a height
     filtration. To this end, a predefined vertex attribute will be
     evaluated. The attribute needs to contain 3D data. The result,
@@ -122,8 +138,8 @@ def calculate_height_filtration(
         Homology Transform for Modeling Shapes and Surfaces",
         arXiv:1310.1030.
     """
-    # TODO: check whether the input data are correct, i.e. there are
-    # attributes and `direction` is 3D.
+    assert _check_vertex_attribute_existence(graph, attribute_in)
+    assert _check_dimensionality(graph, attribute_in, direction)
 
     # Let's  make a copy first because we are modifying the graph's
     # attributes in place here.
