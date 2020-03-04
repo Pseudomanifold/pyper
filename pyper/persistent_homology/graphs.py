@@ -219,6 +219,10 @@ def calculate_persistence_diagrams(
     edge_weights = np.array(graph.es[edge_attribute])
     edge_indices = None
 
+    # Ditto for the vertex weights and indices.
+    vertex_weights = np.array(graph.vs[vertex_attribute])
+    vertex_indices = None
+
     # Will contain all the edges that are responsible for cycles in the
     # graph.
     edge_indices_cycles = []
@@ -227,29 +231,20 @@ def calculate_persistence_diagrams(
 
     if order == 'sublevel':
         edge_indices = np.argsort(edge_weights, kind='stable')
+        vertex_indices = np.argsort(vertex_weights, kind='stable')
 
     # Like the professional that I am, we just need to flip the edge
     # weights here. Note that we do not make *any* assumptions about
-    # whether this is consistent with respect to the nodes.
+    # whether this is consistent with respect to the nodes. The same
+    # goes for the vertex indices, by the weight.
     else:
         edge_indices = np.argsort(-edge_weights, kind='stable')
+        vertex_indices = np.argsort(-vertex_weights, kind='stable')
 
-    # Will contain the indices of each vertex *relative* to the current
-    # filtration. The relative index of vertex $i$ will be saved in the
-    # list at position $i$.
-    vertex_indices = [None for _ in range(n_vertices)]
-    for filtration_index, edge_index in enumerate(edge_indices):
-        u, v = graph.es[edge_index].tuple
-
-        # It is sufficient to update vertex indices only once because by
-        # default, we are getting the lowest (i.e. oldest) index for all
-        # of them.
-
-        if vertex_indices[u] is None:
-            vertex_indices[u] = filtration_index
-
-        if vertex_indices[v] is None:
-            vertex_indices[v] = filtration_index
+    # TODO: is it possible to check vertex and edge indices for
+    # consistency? Only if one uses a running index between all
+    # of the *simplices* in the graph. In this case, every edge
+    # has to be preceded by its vertices.
 
     # Will be filled during the iteration below. This will become
     # the return value of the function.
