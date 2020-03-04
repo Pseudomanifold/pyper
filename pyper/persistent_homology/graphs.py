@@ -7,6 +7,10 @@ from ..utilities import UnionFind
 from ..representations import PersistenceDiagram
 
 
+def _check_vertex_attribute_existence(graph, attribute_in):
+    return attribute_in in graph.vs.attributes()
+
+
 def calculate_distance_filtration(
     graph,
     order=2,
@@ -17,7 +21,8 @@ def calculate_distance_filtration(
 
     Calculates a standard distance-based filtration for a given graph,
     i.e. a filtration that evaluates the Euclidean distance between
-    nodes and uses this as the weight of an edge.
+    nodes and uses this as the weight of an edge. Vertex weights will
+    be set to zero, which is in line with a distance filtration.
 
     Parameters
     ----------
@@ -29,7 +34,9 @@ def calculate_distance_filtration(
         distance between node attributes will be calculated.
 
     attribute_in:
-        Specifies the (vertex) attribute that contains the 3D data.
+        Specifies the (vertex) attribute that contains the coordinate
+        data. This is assumed to be a high-dimensional vector, but the
+        function will accept *any* existing attribute.
 
     attribute_out:
         Specifies the attribute name for storing the result of the
@@ -44,6 +51,8 @@ def calculate_distance_filtration(
     # Let's  make a copy first because we are modifying the graph's
     # attributes in place here.
     graph = ig.Graph.copy(graph)
+
+    assert _check_vertex_attribute_existence(graph, attribute_in)
 
     vertex_weights = []
     edge_weights = []
