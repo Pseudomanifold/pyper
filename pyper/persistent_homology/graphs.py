@@ -7,8 +7,12 @@ from ..utilities import UnionFind
 from ..representations import PersistenceDiagram
 
 
-def _check_vertex_attribute_existence(graph, attribute_in):
-    return attribute_in in graph.vs.attributes()
+def _has_vertex_attribute(graph, attribute):
+    return attribute in graph.vs.attributes()
+
+
+def _has_edge_attribute(graph, attribute):
+    return attribute in graph.es.attributes()
 
 
 def _check_dimensionality(graph, attribute_in, x):
@@ -64,7 +68,7 @@ def calculate_distance_filtration(
     # attributes in place here.
     graph = ig.Graph.copy(graph)
 
-    assert _check_vertex_attribute_existence(graph, attribute_in)
+    assert _has_vertex_attribute(graph, attribute_in)
 
     vertex_weights = []
     edge_weights = []
@@ -139,7 +143,7 @@ def calculate_height_filtration(
         Homology Transform for Modeling Shapes and Surfaces",
         arXiv:1310.1030.
     """
-    assert _check_vertex_attribute_existence(graph, attribute_in)
+    assert _has_vertex_attribute(graph, attribute_in)
     assert _check_dimensionality(graph, attribute_in, direction)
 
     # Let's  make a copy first because we are modifying the graph's
@@ -207,8 +211,8 @@ def calculate_persistence_diagrams(
     n_vertices = graph.vcount()
     uf = UnionFind(n_vertices)
 
-    # TODO: check for vertex attributes
-    # TODO: check for edge attributes
+    assert _has_vertex_attribute(graph, vertex_attribute)
+    assert _has_edge_attribute(graph, edge_attribute)
 
     # The edge weights will be sorted according to the pre-defined
     # filtration that has been specified by the client.
@@ -230,30 +234,43 @@ def calculate_persistence_diagrams(
     else:
         edge_indices = np.argsort(-edge_weights, kind='stable')
 
+    # TODO: determine vertex indices, i.e. the 'age' of a vertex.
+    # A vertex is created as soon as the *first* edge that contains it
+    # has been added to the sequence of edges. When traversing the edge
+    # indices, indices for vertices can thus be defined easily by just
+    # marking them in a vector.
+    #
+    # TODO: this assumes that the edges are zero-indexed in the graph,
+    # which is a valid assumption. Can I check this somehow?
+
     # Will be filled during the iteration below. This will become
     # the return value of the function.
     persistence_diagram_0 = PersistenceDiagram()
 
     # Go over all edges and optionally create new points for the
-    # persistence diagram.
+    # persistence diagram. This is the main loop for our current
+    # filtration, and merely requires keeping track of connected
+    # component information.
     for edge_index, edge_weight in \
             zip(edge_indices, edge_weights[edge_indices]):
         u, v = graph.es[edge_index].tuple
 
         # Preliminary assignment of younger and older component. We
         # will check below whether this is actually correct, for it
-        # is possible that u is actually the older one.
+        # is possible that `u` is actually the older one.
         younger = uf.find(u)
         older = uf.find(v)
 
         # Nothing to do here: the two components are already the
-        # same
+        # same, so the edge gives rise to a *cycle*.
         if younger == older:
             edge_indices_cycles.append(edge_index)
             continue
 
         # Ensures that the older component precedes the younger one
         # in terms of its vertex index
+        #
+        # TODO: is this correct?
         elif younger > older:
             u, v = v, u
             younger, older = older, younger
