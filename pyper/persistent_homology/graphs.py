@@ -275,12 +275,11 @@ def calculate_persistence_diagrams(
             edge_indices_cycles.append(edge_index)
             continue
 
-        # Ensures that the older component precedes the younger one
-        # in terms of its vertex index
-        #
-        # TODO: check vertex indices to determine younger or older
-        # component
-        elif younger > older:
+        # Ensures that the older component *precedes* the younger one
+        # in terms of its vertex index. In other words its index must
+        # be *smaller* than that of the younger component. This might
+        # sound counterintuitive, but is correct.
+        elif vertex_indices[younger] < vertex_indices[older]:
             u, v = v, u
             younger, older = older, younger
 
@@ -289,6 +288,8 @@ def calculate_persistence_diagrams(
         creation = vertex_weight    # x coordinate for persistence diagram
         destruction = edge_weight   # y coordinate for persistence diagram
 
+        # Merge the *younger* connected component into the older one,
+        # thus preserving the 'elder rule'.
         uf.merge(u, v)
         persistence_diagram_0.add(creation, destruction)
 
@@ -312,7 +313,6 @@ def calculate_persistence_diagrams(
     # Create a persistence diagram for the cycles in the data set.
     # Notice that these are *not* properly destroyed; a better, or
     # smarter, calculation would be warranted.
-
     persistence_diagram_1 = PersistenceDiagram()
 
     for edge_index in edge_indices_cycles:
