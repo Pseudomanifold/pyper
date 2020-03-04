@@ -234,14 +234,22 @@ def calculate_persistence_diagrams(
     else:
         edge_indices = np.argsort(-edge_weights, kind='stable')
 
-    # TODO: determine vertex indices, i.e. the 'age' of a vertex.
-    # A vertex is created as soon as the *first* edge that contains it
-    # has been added to the sequence of edges. When traversing the edge
-    # indices, indices for vertices can thus be defined easily by just
-    # marking them in a vector.
-    #
-    # TODO: this assumes that the edges are zero-indexed in the graph,
-    # which is a valid assumption. Can I check this somehow?
+    # Will contain the indices of each vertex *relative* to the current
+    # filtration. The relative index of vertex $i$ will be saved in the
+    # list at position $i$.
+    vertex_indices = [None for _ in range(n_vertices)]
+    for filtration_index, edge_index in enumerate(edge_indices):
+        u, v = graph.es[edge_index].tuple
+
+        # It is sufficient to update vertex indices only once because by
+        # default, we are getting the lowest (i.e. oldest) index for all
+        # of them.
+
+        if vertex_indices[u] is None:
+            vertex_indices[u] = filtration_index
+
+        if vertex_indices[v] is None:
+            vertex_indices[v] = filtration_index
 
     # Will be filled during the iteration below. This will become
     # the return value of the function.
@@ -270,7 +278,8 @@ def calculate_persistence_diagrams(
         # Ensures that the older component precedes the younger one
         # in terms of its vertex index
         #
-        # TODO: is this correct?
+        # TODO: check vertex indices to determine younger or older
+        # component
         elif younger > older:
             u, v = v, u
             younger, older = older, younger
