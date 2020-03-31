@@ -1,4 +1,4 @@
-![`pyper` icon](https://github.com/Pseudomanifold/pyper/raw/master/pyper.svg "`pyper` icon")
+![`pyper` icon](https://github.com/Pseudomanifold/pyper/blob/master/pyper.svg "`pyper` icon")
 
 # `pyper`: Python-based persistent homology algorithms
 
