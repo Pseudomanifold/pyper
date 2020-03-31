@@ -34,36 +34,41 @@ def featurise_distances(diagram):
 
 
 def featurise_pairwise_distances(diagram):
-    '''
+    """Create feature vector based on stable signatures.
+
     Creates a feature vector by calculating the minimum of pairwise
     distances and distances to the diagonal of each pair of points.
     This representation follows the paper:
 
+        Mathieu Carrière, Steve Y. Oudot, and Maks Ovsjanikov
         Stable Topological Signatures for Points on 3D Shapes
 
     The representation is stable, but more costly to compute.
 
-    :param diagram: Persistence diagram
+    Parameters
+    ----------
+    diagram : `PersistenceDiagram`
+        Persistence diagram to featurise. Can also be a generic 2D
+        container for iterating over tuples.
 
-    :return: Sorted vector of distances as described above. The vector
-    is sorted in *descending* order.
-    '''
-
+    Returns
+    -------
+    Sorted vector of distances as described above. The vector is sorted
+    in *descending* order.
+    """
     distances = []
 
     # Auxiliary function for calculating the infinity distance between
     # the two points.
-    def distance(a, b, x, y):
+    def _distance(a, b, x, y):
         return max(abs(a - x), abs(b - y))
 
     for i, (a, b) in enumerate(diagram):
         for j, (x, y) in enumerate(diagram[i:]):
-            k = i + j  # not required for now
-
             m = min(
-                    distance(a, b, x, y),
-                    persistence(a, b),
-                    persistence(x, y)
+                    _distance(a, b, x, y),
+                    _persistence(a, b),
+                    _persistence(x, y)
                 )
 
             distances.append(m)
