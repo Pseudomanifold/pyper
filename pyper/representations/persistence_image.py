@@ -66,6 +66,15 @@ class PersistenceImage:
 
     def transform(self, persistence_diagrams, max_persistence=None):
         """Calculate persistence images of a sequence of diagrams."""
+        if max_persistence is None:
+            max_persistence = np.max([
+                abs(y - x) for pd in persistence_diagrams for x, y in pd
+            ])
+
+        return self._transform(
+                    [pd for pd in persistence_diagrams],
+                    max_persistence
+                )
 
     def _transform(self, persistence_diagram, max_persistence):
         """Calculate persistence image of a single diagram.
@@ -85,7 +94,9 @@ class PersistenceImage:
         -------
         Persistence image.
         """
-        persistence_diagram = _transform(np.asarray(persistence_diagram))
+        # This converts *and* copies the input persistence diagram,
+        # which is exactly what we need.
+        persistence_diagram = _transform(np.array(persistence_diagram))
 
         xmin, ymin = self.xmin, self.ymin
         xmax, ymax = self.xmax, self.ymax
