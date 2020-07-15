@@ -189,6 +189,6 @@ def calculate_persistence_diagrams_1d(
         if c > d:
             c, d = d, c
 
-        pd.append(function[c], function[d])
+        pd.add(function[c], function[d])
 
     return pd
