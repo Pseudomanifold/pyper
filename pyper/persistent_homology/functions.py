@@ -181,9 +181,8 @@ def calculate_persistence_diagrams_1d(
         if (indices[0], indices[-1]) not in persistence_pairs:
             persistence_pairs.append((indices[0], indices[-1]))
 
-    pd = PersistenceDiagram()
-
-    for c, d in persistence_pairs:
-        pd.add(function[c], function[d])
+    pd = PersistenceDiagram(
+        [(function[c], function[d]) for c, d in persistence_pairs]
+    )
 
     return pd
