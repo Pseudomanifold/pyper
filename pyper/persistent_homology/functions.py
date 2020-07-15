@@ -36,6 +36,8 @@ def calculate_persistence_diagrams_1d(
     """
     assert order in ['sublevel', 'superlevel']
 
+    function = np.asarray(function)
+
     if order == 'sublevel':
         indices = np.argsort(function, kind='stable')
         predicate = operator.lt
@@ -179,16 +181,9 @@ def calculate_persistence_diagrams_1d(
         if (indices[0], indices[-1]) not in persistence_pairs:
             persistence_pairs.append((indices[0], indices[-1]))
 
-    # Create a persistence diagram whose ordering corresponds to the
-    # direction of the time flow in the data set. In other words, if
-    # a critical point is preceded by its destroyer, it shall be put
-    # above the diagonal. Else, it will be put below the diagonal.
     pd = PersistenceDiagram()
 
     for c, d in persistence_pairs:
-        if c > d:
-            c, d = d, c
-
         pd.add(function[c], function[d])
 
     return pd
