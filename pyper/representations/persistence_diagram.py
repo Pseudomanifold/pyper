@@ -77,6 +77,11 @@ class PersistenceDiagram(collections.abc.Sequence):
     def total_persistence(self, p=1):
         """Calculate the total persistence of the current pairing.
 
+        The total persistence is closely related to the $p$-norm in that
+        it employs a sum of the persistence values found in the diagram.
+        In contrast to the norm, though, no additional root will be used
+        in this formulation.
+
         Parameters
         ----------
         p:
@@ -85,6 +90,20 @@ class PersistenceDiagram(collections.abc.Sequence):
         Returns
         -------
         Total persistence with exponent $p$.
+        """
+        return sum([abs(x - y)**p for x, y in self._pairs])
+
+    def p_norm(self, p=1):
+        """Calculate the $p$-norm of the current pairing.
+
+        Parameters
+        ----------
+        p : float
+            Exponent for the $p$-norm calculation
+
+        Returns
+        -------
+        $p$-norm of the persistence diagram.
         """
         return sum([abs(x - y)**p for x, y in self._pairs])**(1.0 / p)
 
