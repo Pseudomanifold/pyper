@@ -1,4 +1,5 @@
 *.swp
 *~
 
+pyper.egg-info/
 __pycache__/
