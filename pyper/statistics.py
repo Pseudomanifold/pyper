@@ -38,4 +38,4 @@ def persistent_entropy(diagram):
     total_pers = np.sum(pers)
     probabilities = np.asarray([p / total_pers for p in pers])
 
-    return np.sum(-probabilities * np.log(probabilities))
+    return np.sum(-probabilities * np.log2(probabilities))
