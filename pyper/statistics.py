@@ -7,10 +7,24 @@ diagrams.
 
 import numpy as np
 
+from sklearn.neighbors import NearestNeighbors
+
 
 def _get_persistence_values(diagram):
     """Auxiliary function for calculating persistence values."""
     return [abs(x - y) for x, y in diagram]
+
+
+def _get_knn_distances(diagram, k=1):
+    """Return distance to $k$ nearest neighbours."""
+    # We follow the Chebyshev distance here because it is the right
+    # geometry within the persistence diagram.
+    nn = NearestNeighbors(n_neighbors=k, metric='chebyshev')
+    nn.fit(diagram._pairs)
+
+    # We are only interested in the distances!
+    distances, _ = nn.kneighbors()
+    return distances.ravel()
 
 
 def persistent_entropy(diagram):
@@ -39,3 +53,29 @@ def persistent_entropy(diagram):
     probabilities = np.asarray([p / total_pers for p in pers])
 
     return np.sum(-probabilities * np.log2(probabilities))
+
+
+def spatial_entropy_knn(diagram):
+    """Calculate spatial entropy based on $k$ nearest neighbours.
+
+    Calculates a simple spatial entropy of the diagram that is based
+    on the *relative* distribution of points in the diagram.
+    """
+    distances = _get_knn_distances(diagram)
+
+    # Approximate all 'cells' induced by the distance to the nearest
+    # neighbour. The areas are circles, but in the Chebyshev metric,
+    # the circle is actually a cube of side length $2d$, for $d$ the
+    # distance to the nearest neighbour.
+    areas = 4 * distances**2
+    total_area = np.sum(areas)
+    probabilities = np.array([areas / total_area for area in areas])
+
+    # Ensures that a probability of zero will just result in
+    # a logarithm of zero as well. This is required whenever
+    # one deals with entropy calculations.
+    log_prob = np.log2(probabilities,
+                       out=np.zeros_like(probabilities),
+                       where=(probabilities > 0))
+
+    return np.sum(-probabilities * log_prob)
