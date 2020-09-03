@@ -7,9 +7,8 @@ diagrams.
 
 import numpy as np
 
+from scipy.spatial import Voronoi
 from sklearn.neighbors import NearestNeighbors
-
-from representations import PersistenceDiagram
 
 
 def _get_persistence_values(diagram):
@@ -35,7 +34,7 @@ def _transform_pairs(diagram):
         (a, abs(b - a)) for a, b in diagram._pairs
     ]
 
-    return np.asarray(pairs)
+    return pairs
 
 
 def persistent_entropy(diagram):
@@ -90,3 +89,33 @@ def spatial_entropy_knn(diagram):
                        where=(probabilities > 0))
 
     return np.sum(-probabilities * log_prob)
+
+
+def spatial_entropy_voronoi(diagram):
+    """Calculate spatial entropy based on Voronoi diagrams.
+
+    Calculates a spatial entropy of the diagram that is based on the
+    *relative* distribution of points in the diagram. This function,
+    in contrast to `spatial_entropy_knn`, employs a Voronoi diagram.
+    """
+
+    points = np.asarray(_transform_pairs(diagram))
+
+    # Add boundary vertices to ensure that the regions are bounded. This
+    # is somewhat artificial, and I am not sure whether 'tis a good idea
+    # to do so.
+
+    x_min, x_max = np.min(points[:, 0]), np.max(points[:, 0])
+    y_min, y_max = np.min(points[:, 1]), np.max(points[:, 1])
+
+    points = np.append(points, [
+          (x_min, y_min),  # lower left
+          (x_max, y_min),  # lower right
+          (x_max, y_max),  # upper right
+          (x_min, y_max),  # upper left
+        ],
+        axis=0
+    )
+
+    voronoi_diagram = Voronoi(points, qhull_options='Qbb Qc Qz')
+    raise NotImplementedError('This function is not yet implemented')
