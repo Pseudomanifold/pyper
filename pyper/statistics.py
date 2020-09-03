@@ -9,6 +9,8 @@ import numpy as np
 
 from sklearn.neighbors import NearestNeighbors
 
+from representations import PersistenceDiagram
+
 
 def _get_persistence_values(diagram):
     """Auxiliary function for calculating persistence values."""
@@ -25,6 +27,15 @@ def _get_knn_distances(diagram, k=1):
     # We are only interested in the distances!
     distances, _ = nn.kneighbors()
     return distances.ravel()
+
+
+def _transform_pairs(diagram):
+    """Return pairs transformed into creation--persistence plane."""
+    pairs = [
+        (a, abs(b - a)) for a, b in diagram._pairs
+    ]
+
+    return np.asarray(pairs)
 
 
 def persistent_entropy(diagram):
