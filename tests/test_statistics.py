@@ -8,6 +8,7 @@ from pyper.representations import PersistenceDiagram
 
 from pyper.statistics import persistent_entropy
 from pyper.statistics import spatial_entropy_knn
+from pyper.statistics import spatial_entropy_voronoi
 
 
 class TestPersistentEntropy(unittest.TestCase):
@@ -64,3 +65,28 @@ class TestSpatialEntropyKNN(unittest.TestCase):
 
         self.assertAlmostEqual(entropy_1, 2.0)
         self.assertNotEqual(entropy_1, entropy_2)
+
+
+class TestSpatialEntropy(unittest.TestCase):
+    """Simple test for extreme values of spatial entropy.
+
+    In contrast to the other unit test, this one does *not* make use of
+    the KNN approximation, but employs a Voronoi decomposition.
+    """
+
+    def test(self):
+        # The entropy of a diagram with equal-length bars should be the
+        # binary logarithm of the number of its samples. This is only a
+        # given for the persistent entropy. The *spatial entropy* needs
+        # to pick up on these differences.
+        pd = PersistenceDiagram(pairs=[
+            (0.0, 1.0),
+            (1.1, 2.3),
+            (3.7, 4.8),
+            (4.9, 5.4)
+        ])
+
+        entropy_1 = persistent_entropy(pd)
+
+        with self.assertRaises(NotImplementedError):
+            entropy_2 =spatial_entropy_voronoi(pd)
