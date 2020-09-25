@@ -38,6 +38,11 @@ class PersistenceDiagram(collections.abc.Sequence):
         """Return the persistence pair at the given index."""
         return self._pairs[index]
 
+    @property
+    def persistence(self):
+        """Return list of persistence values of this diagram."""
+        return [abs(d - c) for c, d in self._pairs]
+
     def add(self, x, y):
         """Append a new persistence pair to the given diagram.
 
