@@ -38,6 +38,11 @@ class PersistenceDiagram(collections.abc.Sequence):
         """Return the persistence pair at the given index."""
         return self._pairs[index]
 
+    def __truediv__(self, alpha):
+        """Elementwise division by a scalar."""
+        self._pairs = [(c / alpha, d / alpha) for c, d in self._pairs]
+        return self
+
     @property
     def persistence(self):
         """Return list of persistence values of this diagram."""
