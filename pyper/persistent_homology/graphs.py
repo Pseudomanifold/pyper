@@ -219,9 +219,13 @@ def calculate_persistence_diagrams(
     edge_weights = np.array(graph.es[edge_attribute])
     edge_indices = None
 
-    # Ditto for the vertex weights and indices.
+    # Ditto for the vertex weights and indices---with the difference
+    # that we will require the `vertex_indices` array to look up the
+    # position of a vertex with respect to the given filtration. In
+    # other words, `vertex_indices[i]` points towards the *rank* of
+    # vertex i.
     vertex_weights = np.array(graph.vs[vertex_attribute])
-    vertex_indices = None
+    vertex_indices = np.empty_like(vertex_weights)
 
     # Will contain all the edges that are responsible for cycles in the
     # graph.
@@ -231,7 +235,11 @@ def calculate_persistence_diagrams(
 
     if order == 'sublevel':
         edge_indices = np.argsort(edge_weights, kind='stable')
-        vertex_indices = np.argsort(vertex_weights, kind='stable')
+
+        # Required to ensure that the array can be used as a look-up
+        # table. See above for more discussion.
+        vertex_indices[np.argsort(vertex_weights, kind='stable')] = \
+            np.arange(len(vertex_weights))
 
     # Like the professional that I am, we just need to flip the edge
     # weights here. Note that we do not make *any* assumptions about
@@ -239,7 +247,11 @@ def calculate_persistence_diagrams(
     # goes for the vertex indices, by the weight.
     else:
         edge_indices = np.argsort(-edge_weights, kind='stable')
-        vertex_indices = np.argsort(-vertex_weights, kind='stable')
+
+        # Required to ensure that the array can be used as a look-up
+        # table. See above for more discussion.
+        vertex_indices[np.argsort(-vertex_weights, kind='stable')] = \
+            np.arange(len(vertex_weights))
 
     # TODO: is it possible to check vertex and edge indices for
     # consistency? Only if one uses a running index between all
