@@ -27,6 +27,50 @@ def _check_dimensionality(graph, attribute_in, x):
     assert x_length in a_lengths  # length/dimensionality coincide
 
 
+def extend_filtration_to_edges(
+    graph,
+    vertex_attribute='f',
+    edge_attribute='f',
+    order='sublevel'
+):
+    """Extend a vertex-based filtration to the edges of a graph.
+
+    Parameters
+    ----------
+    graph:
+        Input graph
+
+    vertex_attribute:
+        Specifies which vertex attribute to use for the calculation of
+        the filtration.
+
+    edge_attribute:
+        Specifies which edge attribute to use for storing the result of
+        the filtration calculation.
+
+    order:
+        Specifies the filtration order that is to be used for
+        calculating edge values. Can be either 'sublevel' for
+        a sublevel set filtration, or 'superlevel'.
+
+    Returns
+    -------
+    Graph with vertex values extended to edges.
+    """
+    edge_weights = []
+
+    for edge in graph.es:
+        u, v = edge.source, edge.target
+        f_u = graph.vs[u][vertex_attribute]
+        f_v = graph.vs[v][vertex_attribute]
+
+        eval_fn = np.max if order == 'sublevel' else np.min
+        edge_weights.append(eval_fn(f_u, f_v))
+
+    graph.es[edge_attribute] = edge_weights
+    return graph
+
+
 def calculate_distance_filtration(
     graph,
     order=2,
