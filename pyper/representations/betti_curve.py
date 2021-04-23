@@ -107,7 +107,7 @@ def make_betti_curve(diagram):
     # check if the last proper output was different from our previously
     # seen value. If so, there's another sequence in the output that we
     # missed so far.
-    if prev_p != output_[-1][0]:
+    if len(output_) > 0 and prev_p != output_[-1][0]:
 
         # Note that the two arguments are fake; they are only required
         # to trigger the insertion of another interval.

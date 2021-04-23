@@ -15,6 +15,13 @@ simple_diagram = PersistenceDiagram(pairs=[
     (5.0, 8.0)
 ])
 
+class TestBettiCurveEdgeCases(unittest.TestCase):
+    def test_empty(self):
+        betti_curve = make_betti_curve([])
+
+    def test_all_equal(self):
+        betti_curve = make_betti_curve([[0.0, 0.0], [0.0, 0.0]])
+
 
 class TestBettiCurveSimple(unittest.TestCase):
     def test(self):
