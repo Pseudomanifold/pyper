@@ -347,7 +347,10 @@ def calculate_persistence_diagrams(
     # By default, use the largest weight to assign to unpaired
     # vertices. This is consistent with *extended persistence*
     # calculations.
-    unpaired_value = edge_weights[edge_indices[-1]]
+    if len(edge_weights) > 0:
+        unpaired_value = edge_weights[edge_indices[-1]]
+    else:
+        unpaired_value = 0
 
     # Add tuples for every root component in the Union--Find data
     # structure. This ensures that multiple connected components
