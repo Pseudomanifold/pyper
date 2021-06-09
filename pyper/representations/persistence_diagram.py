@@ -5,6 +5,7 @@ summary statistics.
 """
 
 import collections.abc
+import numpy
 
 
 class PersistenceDiagram(collections.abc.Sequence):
@@ -142,3 +143,36 @@ class PersistenceDiagram(collections.abc.Sequence):
         Infinity norm with exponent $p$.
         """
         return max([abs(x - y)**p for x, y in self._pairs])
+
+
+def diagrams_from_tensor(data):
+    """Attempt to extract persistence diagrams from tensor.
+
+    This function attempts to turn a tensor into a sequence of
+    persistence diagrams. The tensor is supposed to consist of
+    the axes creation, destruction, and dimension. Every other
+    axis will be ignored.
+
+    Parameters
+    ----------
+    data : np.array
+        Input tensor of shape (n, 3).
+
+    Returns
+    -------
+    List of persistence diagrams. The property `dimension` of each
+    diagram is set to indicate the dimension of its tuples.
+    """
+    # Will contain the individual diagrams, sorted by dimension. This is
+    # not necessary, but a nice touch.
+    diagrams = []
+    dimensions = numpy.unique(data[..., 2])
+
+    for dimension in sorted(dimensions):
+        data_ = data[data[..., 2] == dimension]
+        persistence_pairs = data_[:, 0:2]
+
+        diagram = PersistenceDiagram(persistence_pairs, dimension=dimension)
+        diagrams.append(diagram)
+
+    return diagrams
