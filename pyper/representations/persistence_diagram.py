@@ -15,7 +15,7 @@ class PersistenceDiagram(collections.abc.Sequence):
     interface for storing and accessing this pairing.
     """
 
-    def __init__(self, pairs=None):
+    def __init__(self, pairs=None, dimension=None):
         """Create new persistence diagram.
 
         Parameters
@@ -24,11 +24,18 @@ class PersistenceDiagram(collections.abc.Sequence):
             Optional sequence of persistence pairs to add to this
             diagram. If set, the diagram will be initialised with
             said sequence. The sequence *must* consist of tuples.
+
+        dimension : int (optional)
+            Specifies dimension of the diagram. This can be useful in
+            order to denote the tuples that gave rise to a *specific*
+            diagram.
         """
         if pairs is None:
             self._pairs = []
         else:
             self._pairs = [(c, d) for c, d in pairs]
+
+        self._dimension = dimension
 
     def __len__(self):
         """Return the number of pairs in the persistence diagram."""
@@ -42,6 +49,11 @@ class PersistenceDiagram(collections.abc.Sequence):
         """Elementwise division by a scalar."""
         self._pairs = [(c / alpha, d / alpha) for c, d in self._pairs]
         return self
+
+    @property
+    def dimension(self):
+        """Return dimension of the persistence diagram, if set."""
+        return self._dimension
 
     @property
     def persistence(self):
