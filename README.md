@@ -2,6 +2,10 @@
 
 # `pyper`: Python-based persistent homology algorithms
 
+This is a work-in-progress repository for experimenting with persistent
+homology algorithms. `pyper` is best used as an additional dependency in
+a project; there are no user-callable scripts in here.
+
 ## Running the test suite
 
 To run all tests, use this command:
