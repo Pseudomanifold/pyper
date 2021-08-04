@@ -64,7 +64,7 @@ def extend_filtration_to_edges(
         f_u = graph.vs[u][vertex_attribute]
         f_v = graph.vs[v][vertex_attribute]
 
-        eval_fn = np.max if order == 'sublevel' else np.min
+        eval_fn = max if order == 'sublevel' else min
         edge_weights.append(eval_fn(f_u, f_v))
 
     graph.es[edge_attribute] = edge_weights
