@@ -219,6 +219,7 @@ def calculate_persistence_diagrams(
     vertex_attribute='f',
     edge_attribute='f',
     order='sublevel',
+    unpaired=None,
 ):
     """Calculate persistence diagrams for a graph.
 
@@ -246,6 +247,10 @@ def calculate_persistence_diagrams(
         Specifies the filtration order that is to be used for calculating
         persistence diagrams. Can be either 'sublevel' for a sublevel set
         filtration, or 'superlevel' for a superlevel set filtration.
+
+    unpaired : float or `None`
+        If set, uses this value to represent unpaired simplices. Else,
+        the largest edge weight will be used.
 
     Returns
     -------
@@ -351,6 +356,10 @@ def calculate_persistence_diagrams(
         unpaired_value = edge_weights[edge_indices[-1]]
     else:
         unpaired_value = 0
+
+    # Use the user-provided value if available.
+    if unpaired is not None:
+        unpaired_value = unpaired
 
     # Add tuples for every root component in the Union--Find data
     # structure. This ensures that multiple connected components
