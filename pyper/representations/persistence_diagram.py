@@ -156,7 +156,8 @@ def diagrams_from_tensor(data):
     Parameters
     ----------
     data : np.array
-        Input tensor of shape (n, m, 3).
+        Input tensor of shape (n, 3). Each tuple represent a topological
+        feature by its creation, destruction, and dimension.
 
     Returns
     -------
