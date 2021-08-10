@@ -156,7 +156,7 @@ def diagrams_from_tensor(data):
     Parameters
     ----------
     data : np.array
-        Input tensor of shape (n, 3).
+        Input tensor of shape (n, m, 3).
 
     Returns
     -------
