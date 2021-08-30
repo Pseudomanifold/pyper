@@ -76,3 +76,17 @@ class UnionFind:
         for vertex, parent in enumerate(self._parent):
             if vertex == parent:
                 yield vertex
+
+    def get_component(self, root):
+        """Get vertices belonging to a specific component.
+
+        Parameters
+        ----------
+        root:
+            Root of the specified connected component.
+
+        Returns
+        -------
+        List of vertices in said connected component.
+        """
+        return [v for v, p in enumerate(self._parent) if p == root]
