@@ -60,7 +60,9 @@ def persistent_entropy(diagram):
     """
     pers = _get_persistence_values(diagram)
     total_pers = np.sum(pers)
-    probabilities = np.asarray([p / total_pers for p in pers])
+    probabilities = np.nan_to_num(
+        np.asarray([p / total_pers for p in pers])
+    )
 
     return np.sum(-probabilities * np.log2(probabilities))
 
