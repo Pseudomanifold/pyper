@@ -64,7 +64,14 @@ def persistent_entropy(diagram):
         np.asarray([p / total_pers for p in pers])
     )
 
-    return np.sum(-probabilities * np.log2(probabilities))
+    # Ensures that a probability of zero will just result in
+    # a logarithm of zero as well. This is required whenever
+    # one deals with entropy calculations.
+    log_prob = np.log2(probabilities,
+                       out=np.zeros_like(probabilities),
+                       where=(probabilities > 0))
+
+    return np.sum(-probabilities * log_prob)
 
 
 def spatial_entropy_knn(diagram):
@@ -100,7 +107,6 @@ def spatial_entropy_voronoi(diagram):
     *relative* distribution of points in the diagram. This function,
     in contrast to `spatial_entropy_knn`, employs a Voronoi diagram.
     """
-
     points = np.asarray(_transform_pairs(diagram))
 
     # Add boundary vertices to ensure that the regions are bounded. This
