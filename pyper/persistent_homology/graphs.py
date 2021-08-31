@@ -219,7 +219,6 @@ def calculate_persistence_diagrams(
     vertex_attribute='f',
     edge_attribute='f',
     order='sublevel',
-    use_indices=False,
     unpaired=None,
 ):
     """Calculate persistence diagrams for a graph.
@@ -248,11 +247,6 @@ def calculate_persistence_diagrams(
         Specifies the filtration order that is to be used for calculating
         persistence diagrams. Can be either 'sublevel' for a sublevel set
         filtration, or 'superlevel' for a superlevel set filtration.
-
-    use_indices : bool
-        If set, uses the indices of the vertices in the persistence
-        diagram instead of the function values. This makes it easier to
-        reconstruct pairing information from the diagram.
 
     unpaired : float or `None`
         If set, uses this value to represent unpaired simplices. Else,
@@ -350,14 +344,6 @@ def calculate_persistence_diagrams(
         creation = vertex_weight    # x coordinate for persistence diagram
         destruction = edge_weight   # y coordinate for persistence diagram
 
-        # Add indices to persistence diagram if desired by the client.
-        # The weights can always be reconstructed later on (although a
-        # technical issue here is that `older` refers to a vertex, not
-        # an edge).
-        if use_indices:
-            creation = younger
-            destruction = older
-
         # Merge the *younger* connected component into the older one,
         # thus preserving the 'elder rule'.
         uf.merge(u, v)
@@ -384,12 +370,6 @@ def calculate_persistence_diagrams(
 
         creation = vertex_weight
         destruction = unpaired_value
-
-        # Use tuples of the form (a, a) for the root in case the client
-        # wants indices.
-        if use_indices:
-            creation = root
-            destruction = root
 
         persistence_diagram_0.add(creation, destruction)
 
