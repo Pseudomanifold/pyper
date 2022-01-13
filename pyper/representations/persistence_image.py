@@ -115,11 +115,11 @@ class PersistenceImage:
 
         # Create the proper grid for the persistence image. This will be
         # 'flipped' later on when it comes to the matrix conversion.
-        x, xstep = np.linspace(xmin, xmax, self._width, retstep=True)
-        y, ystep = np.linspace(ymin, ymax, self._height, retstep=True)
+        x, xstep = np.linspace(xmin, xmax, self.width, retstep=True)
+        y, ystep = np.linspace(ymin, ymax, self.height, retstep=True)
 
-        xstep = np.repeat(xstep, self._width)
-        ystep = np.repeat(ystep, self._height)
+        xstep = np.repeat(xstep, self.width)
+        ystep = np.repeat(ystep, self.height)
 
         xc, yc = np.meshgrid(
             np.cumsum(xstep) - 0.5 * xstep,
@@ -134,8 +134,8 @@ class PersistenceImage:
         # TODO: should we flip this here?
         persistence_image = np.zeros((self.height, self.width))
 
-        for i in range(self._width):
-            for j in range(self._height):
+        for i in range(self.width):
+            for j in range(self.height):
                 cx = xc[i, j]
                 cy = yc[i, j]
 
